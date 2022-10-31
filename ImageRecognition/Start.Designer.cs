@@ -76,7 +76,7 @@
             this.info_img.Size = new System.Drawing.Size(35, 35);
             this.info_img.TabIndex = 2;
             this.info_img.TabStop = false;
-            this.info_img.Click += new System.EventHandler(this.info_img_Click);
+            this.info_img.Click += new System.EventHandler(this.Info_img_Click);
             // 
             // pictureBox1
             // 
@@ -182,7 +182,7 @@
             this.submit_btn.Text = "Submit";
             this.submit_btn.UseVisualStyleBackColor = true;
             this.submit_btn.Visible = false;
-            this.submit_btn.Click += new System.EventHandler(this.submit_btn_Click);
+            this.submit_btn.Click += new System.EventHandler(this.Submit_btn_Click);
             // 
             // start_btn
             // 
@@ -196,7 +196,7 @@
             this.start_btn.TabIndex = 13;
             this.start_btn.Text = "Start";
             this.start_btn.UseVisualStyleBackColor = false;
-            this.start_btn.Click += new System.EventHandler(this.start_btn_Click);
+            this.start_btn.Click += new System.EventHandler(this.Start_btn_Click);
             // 
             // openFileDialog
             // 
@@ -214,7 +214,7 @@
             this.upload_lbl.TabIndex = 14;
             this.upload_lbl.Text = "Upload";
             this.upload_lbl.Visible = false;
-            this.upload_lbl.Click += new System.EventHandler(this.upload_lbl_Click);
+            this.upload_lbl.Click += new System.EventHandler(this.Upload_lbl_Click);
             // 
             // counter_lbl
             // 

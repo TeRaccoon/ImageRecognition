@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace ImageRecognition
 {
     public partial class Start : Form
     {
-        List<string> selectedImagePaths = new List<string>();
-        int clickCount = 0;
+        private readonly List<string> selectedImagePaths = new List<string>();
+        private int clickCount = 0;
         public Start()
         {
             InitializeComponent();
@@ -80,14 +76,14 @@ namespace ImageRecognition
                 File.Copy(selectedImagePaths[i], @"C:\xampp\htdocs\Res\" + i + ".jpg", true);
             }
         }
-        private void start_btn_Click(object sender, EventArgs e)
+        private void Start_btn_Click(object sender, EventArgs e)
         {
             start_btn.Visible = false;
             submit_btn.Visible = true;
             username_txt.Visible = true;
             instruction_lbl.Text = "Please enter a username or email";
         }
-        private void submit_btn_Click(object sender, EventArgs e)
+        private void Submit_btn_Click(object sender, EventArgs e)
         {
             upload_lbl.Visible = true;
             upload_lbl.Enabled = true;
@@ -104,12 +100,12 @@ namespace ImageRecognition
             }
             PopulateImages();
         }
-        private void info_img_Click(object sender, EventArgs e)
+        private void Info_img_Click(object sender, EventArgs e)
         {
             Process.Start(@"readme.txt");
         }
 
-        private void upload_lbl_Click(object sender, EventArgs e)
+        private void Upload_lbl_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {

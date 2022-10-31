@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ImageRecognition
 {
-    class ImageComparison
+    internal class ImageComparison
     {
 
         public string[] ProcessImage(string path)
         {
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-            Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32));
+            Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32)); // Downscaled image. Any larger resolution has a minimal impact.
             fs.Close();
             int redCount = 0, greenCount = 0, blueCount = 0, blackWhiteCount = 0;
-
             for (int y = 0; y < target.Width; y++)
             {
                 for (int x = 0; x < target.Height; x++)
                 {
                     Color pixel = target.GetPixel(x, y);
-                    if (pixel.R > pixel.G && pixel.R > pixel.B && pixel.R > 20)
+                    if (pixel.R > pixel.G && pixel.R > pixel.B && pixel.R > 20) // Any value less than 20 can still be considered still gray.
                     {
                         redCount++;
                     }
@@ -51,16 +46,17 @@ namespace ImageRecognition
             List<int> scores = new List<int>();
             string[] colourData = File.ReadAllLines(@"Data/codes.data");
             string[] results = new string[8];
+            // Finds the colour value difference between the original and to compare images and adds it to the scores list.
             for (int imageIndex = 0; imageIndex < colourData.Length; imageIndex++)
             {
-                string currentData = Regex.Replace(colourData[imageIndex], "[^. .0-9]", "");
+                string currentData = Regex.Replace(colourData[imageIndex], "[^. .0-9]", ""); // Removes redundant data.
                 string[] currentColourValue = currentData.Split(' ');
                 scores.Add(Math.Abs(colourValues[0] - Convert.ToInt32(currentColourValue[0])) + Math.Abs(colourValues[1] - Convert.ToInt32(currentColourValue[1])) + Math.Abs(colourValues[2] - Convert.ToInt32(currentColourValue[2])) + Math.Abs(colourValues[3] - Convert.ToInt32(currentColourValue[3])));
             }
- 
+
             for (int i = 0; i < 8; i++)
             {
-                if (scores.Min() == 0)
+                if (scores.Min() == 0) // Prevents the same image from being used twice
                 {
                     scores.RemoveAt(scores.IndexOf(scores.Min()));
                     i--;
@@ -74,7 +70,7 @@ namespace ImageRecognition
             return results;
         }
 
-        public void UpdateDateFile()
+        public void UpdateDateFile() // Used to make sure the image directory and the data file are synced.
         {
             for (int imageIndex = 0; imageIndex < Directory.GetFiles(@"DataFiles").Length; imageIndex++)
             {
@@ -106,7 +102,7 @@ namespace ImageRecognition
                 }
                 File.AppendAllText(@"Data/codes.data", "R:" + redCount + " G:" + greenCount + " B:" + blueCount + " BW:" + blackWhiteCount + "\n");
             }
-            
+
         }
     }
 }

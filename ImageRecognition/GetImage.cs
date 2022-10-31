@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System;
 
 namespace ImageRecognition
 {
-    class GetImage
+    internal class GetImage
     {
-        string url;
-        int totalCounter = 0;
+        private string url;
+        private int totalCounter = 0;
         public void GetLinks(string topic)
         {
             url = "https://www.google.com/search?q=" + topic + "&tbm=isch";
