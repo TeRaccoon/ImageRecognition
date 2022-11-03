@@ -17,7 +17,7 @@ namespace ImageRecognition
         {
             InitializeComponent();
             openFileDialog.Title = "Browse Image Files";
-            openFileDialog.Filter = "Images(*.BMP; *.JPG; *.PNG;)| *.BMP; *.JPG; *.GIF; *.PNG;";
+            openFileDialog.Filter = "Images(*.BMP; *.JPG; *.PNG;)| *.BMP; *.JPG; *.PNG;";
             openFileDialog.CheckFileExists = true;
             openFileDialog.CheckPathExists = true;
             foreach (Control control in this.Controls)
@@ -65,13 +65,10 @@ namespace ImageRecognition
             }
             return passwords;
         }
-        private void ProcessImages()
+        private void ProcessImage() //PROCESS IMAGE STRAIGHT AFTER SELECTING EACH ONE
         {
-            for (int i = 0; i < 6; i++)
-            {
-                selectedImagePaths.AddRange(new ImageComparison().ProcessImage(selectedImagePaths[i]));
-            }
-            for (int i = 0; i < selectedImagePaths.Count; i++)
+            selectedImagePaths.AddRange(new ImageComparison().ProcessImage(selectedImagePaths[(clickCount - 1)* 9]));
+            for (int i = (clickCount - 1) * 9 ; i < selectedImagePaths.Count; i++)
             {
                 File.Copy(selectedImagePaths[i], @"C:\xampp\htdocs\Res\" + i + ".jpg", true);
             }
@@ -124,10 +121,10 @@ namespace ImageRecognition
         {
             clickCount++;
             counter_lbl.Text = clickCount + "/6";
+            ProcessImage();
             if (clickCount == 6)
             {
                 instruction_lbl.Text = "Processing selection...";
-                ProcessImages();
                 instruction_lbl.Text = "Select a master image";
             }
             if (clickCount == 7)
@@ -138,7 +135,11 @@ namespace ImageRecognition
                 string hashString = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
                 File.WriteAllText(@"SecurityData/master.data", hashString);
 
-                GeneratePasswords();
+                string[] toEmbed = GeneratePasswords();
+
+                // All of the steganography and DWT
+
+                //Process render = Process.Start()
             }
         }
     }

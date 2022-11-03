@@ -56,7 +56,7 @@ namespace ImageRecognition
 
             for (int i = 0; i < 8; i++)
             {
-                if (scores.Min() == 0) // Prevents the same image from being used twice
+                if (scores.Min() == 0) // Prevents the same image from being used twice.
                 {
                     scores.RemoveAt(scores.IndexOf(scores.Min()));
                     i--;
