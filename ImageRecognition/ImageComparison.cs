@@ -4,13 +4,32 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace ImageRecognition
 {
     internal class ImageComparison
     {
 
-        public string[] ProcessImage(string path)
+        public string[] Start(string path)
+        {
+            LoadData();
+            string[] data = ProcessImage(path);
+            RemoveData();
+            return data;
+        }
+        private void LoadData()
+        {
+            WebClient client = new WebClient();
+            client.DownloadFile(@"http://127.0.0.1/data/image_names.data", "image_names.data");
+            client.DownloadFile(@"http://127.0.0.1/data/codes.data", "codes.data");
+        }
+        private void RemoveData()
+        {
+            File.Delete(@"image_names.data");
+            File.Delete(@"codes_data");
+        }
+        private string[] ProcessImage(string path)
         {
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32)); // Downscaled image. Any larger resolution has a minimal impact.
@@ -44,7 +63,7 @@ namespace ImageRecognition
         private string[] CompareImages(int[] colourValues)
         {
             List<int> scores = new List<int>();
-            string[] colourData = File.ReadAllLines(@"Data/codes.data");
+            string[] colourData = File.ReadAllLines(@"codes.data");
             string[] results = new string[8];
             // Finds the colour value difference between the original and to compare images and adds it to the scores list.
             for (int imageIndex = 0; imageIndex < colourData.Length; imageIndex++)
@@ -63,7 +82,7 @@ namespace ImageRecognition
                 }
                 else
                 {
-                    results[i] = Directory.GetFiles(@"DataFiles")[scores.IndexOf(scores.Min())];
+                    results[i] = File.ReadAllLines(@"image_names.data")[scores.IndexOf(scores.Min())];
                     scores.RemoveAt(scores.IndexOf(scores.Min()));
                 }
             }

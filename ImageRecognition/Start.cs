@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 
@@ -31,20 +32,19 @@ namespace ImageRecognition
         private void PopulateImages()
         {
             string[] fileNames = new string[6];
+            WebClient client = new WebClient();
+            client.DownloadFile(@"http://127.0.0.1/data/image_names.data", "image_names.data");
             Random random = new Random();
             for (int i = 0; i < 6; i++)
             {
-                fileNames[i] = Directory.GetFiles(@"DataFiles")[random.Next(0, Directory.GetFiles(@"DataFiles").Length - 1)];
+                fileNames[i] = File.ReadAllLines(@"image_names.data")[random.Next(0, File.ReadAllLines(@"image_names.data").Length)];
             }
             int counter = 0;
             foreach (PictureBox pictureBox in this.Controls.OfType<PictureBox>())
             {
                 if (pictureBox.Name.Contains("pictureBox"))
                 {
-                    FileStream fs = new FileStream(fileNames[counter], FileMode.Open);
-                    pictureBox.Image = Image.FromStream(fs);
-                    pictureBox.ImageLocation = fileNames[counter];
-                    fs.Close();
+                    pictureBox.ImageLocation = @"http://127.0.0.1/datafiles/" + fileNames[counter];
                 }
                 counter++;
             }
@@ -67,10 +67,12 @@ namespace ImageRecognition
         }
         private void ProcessImage() //PROCESS IMAGE STRAIGHT AFTER SELECTING EACH ONE
         {
-            selectedImagePaths.AddRange(new ImageComparison().ProcessImage(selectedImagePaths[(clickCount - 1)* 9]));
+            selectedImagePaths.AddRange(new ImageComparison().Start(selectedImagePaths[(clickCount - 1)* 9]));
             for (int i = (clickCount - 1) * 9 ; i < selectedImagePaths.Count; i++)
             {
-                File.Copy(selectedImagePaths[i], @"C:\xampp\htdocs\Res\" + i + ".jpg", true);
+                Directory.CreateDirectory(@"SelectedImages");
+                WebClient client = new WebClient();
+                client.DownloadFile(@"http://127.0.0.1/datafiles/" + selectedImagePaths[i], "/SelectedImages/" + i + ".jpg");
             }
         }
         private void Start_btn_Click(object sender, EventArgs e)
