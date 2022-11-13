@@ -10,11 +10,10 @@ namespace ImageRecognition
 {
     internal class ImageComparison
     {
-
-        public string[] Start(string path)
+        public string[] Start(ImageData image)
         {
             LoadData();
-            string[] data = ProcessImage(path);
+            string[] data = ProcessImage(image);
             RemoveData();
             return data;
         }
@@ -29,9 +28,11 @@ namespace ImageRecognition
             File.Delete(@"image_names.data");
             File.Delete(@"codes_data");
         }
-        private string[] ProcessImage(string path)
+        private string[] ProcessImage(ImageData image)
         {
-            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            WebClient client = new WebClient();
+            client.DownloadFile(image.GetServerPath(), @"SelectedImages\" + image.GetLocalPath());
+            FileStream fs = new FileStream(@"SelectedImages\" + image.GetLocalPath(), FileMode.Open, FileAccess.Read);
             Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32)); // Downscaled image. Any larger resolution has a minimal impact.
             fs.Close();
             int redCount = 0, greenCount = 0, blueCount = 0, blackWhiteCount = 0;
@@ -121,7 +122,6 @@ namespace ImageRecognition
                 }
                 File.AppendAllText(@"Data/codes.data", "R:" + redCount + " G:" + greenCount + " B:" + blueCount + " BW:" + blackWhiteCount + "\n");
             }
-
         }
     }
 }
