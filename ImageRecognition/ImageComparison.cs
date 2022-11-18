@@ -30,10 +30,18 @@ namespace ImageRecognition
         }
         private string[] ProcessImage(ImageData image)
         {
+            FileStream fs;
             WebClient client = new WebClient();
-            client.DownloadFile(image.GetServerPath(), @"SelectedImages\" + image.GetLocalPath());
-            FileStream fs = new FileStream(@"SelectedImages\" + image.GetLocalPath(), FileMode.Open, FileAccess.Read);
-            Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32)); // Downscaled image. Any larger resolution has a minimal impact.
+            if (image.GetServerPath().Contains("http://"))
+            {
+                client.DownloadFile(image.GetServerPath(), @"Render/SelectedImages\" + image.GetLocalPath());
+                fs = new FileStream(@"Render/SelectedImages\" + image.GetLocalPath(), FileMode.Open, FileAccess.Read);
+            }
+            else
+            {
+                fs = new FileStream(image.GetServerPath(), FileMode.Open, FileAccess.Read);
+            }
+            Bitmap target = new Bitmap(Image.FromStream(fs), new Size(32, 32)); // Downscaled image. Any larger resolution ha6s a minimal impact.
             fs.Close();
             int redCount = 0, greenCount = 0, blueCount = 0, blackWhiteCount = 0;
             for (int y = 0; y < target.Width; y++)
@@ -69,6 +77,9 @@ namespace ImageRecognition
             // Finds the colour value difference between the original and to compare images and adds it to the scores list.
             for (int imageIndex = 0; imageIndex < colourData.Length; imageIndex++)
             {
+                if (imageIndex == 1184 || imageIndex == 1203 || imageIndex == 1185)
+                { 
+                }
                 string currentData = Regex.Replace(colourData[imageIndex], "[^. .0-9]", ""); // Removes redundant data.
                 string[] currentColourValue = currentData.Split(' ');
                 scores.Add(Math.Abs(colourValues[0] - Convert.ToInt32(currentColourValue[0])) + Math.Abs(colourValues[1] - Convert.ToInt32(currentColourValue[1])) + Math.Abs(colourValues[2] - Convert.ToInt32(currentColourValue[2])) + Math.Abs(colourValues[3] - Convert.ToInt32(currentColourValue[3])));
@@ -78,7 +89,7 @@ namespace ImageRecognition
             {
                 if (scores.Min() == 0) // Prevents the same image from being used twice.
                 {
-                    scores.RemoveAt(scores.IndexOf(scores.Min()));
+                    scores[scores.IndexOf(scores.Min())] = 2000;
                     i--;
                 }
                 else
