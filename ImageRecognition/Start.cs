@@ -31,12 +31,9 @@ namespace ImageRecognition
                 openFileDialog.Filter = "Images (*.BMP; *.JPG; *.PNG;)| *.BMP; *.JPG; *.PNG;";
                 openFileDialog.CheckFileExists = true;
                 openFileDialog.CheckPathExists = true;
-                foreach (Control control in this.Controls) // Assigns the click event to each picture box except the information image.
+                foreach (Control control in this.Controls.OfType<PictureBox>().Where(n => n.Name.Contains("pictureBox"))) // Assigns the click event to each picture box except the information image.
                 {
-                    if (control is PictureBox && control.Name.Contains("pictureBox"))
-                    {
-                        control.Click += PictureBox_Click;
-                    }
+                    control.Click += PictureBox_Click;
                 }
             }
         }
@@ -85,31 +82,23 @@ namespace ImageRecognition
                 fileNames[i] = File.ReadAllLines(@"image_names.data")[random.Next(0, File.ReadAllLines(@"image_names.data").Length)]; // Selects 6 random image names from the file.
             }
             int counter = 0;
-            foreach (PictureBox pictureBox in this.Controls.OfType<PictureBox>()) // Fills the picture boxes with the selected images.
+            foreach (PictureBox pictureBox in this.Controls.OfType<PictureBox>().Where(n => n.Name.Contains("pictureBox"))) // Fills the picture boxes with the selected images.
             {
-                if (pictureBox.Name.Contains("pictureBox"))
-                {
-                    pictureBox.ImageLocation = @"http://127.0.0.1/datafiles/" + fileNames[counter];
-                    counter++;
-                }
+                pictureBox.ImageLocation = @"http://127.0.0.1/datafiles/" + fileNames[counter];
+                counter++;
             }
             File.Delete(@"image_names.data"); // Deletes the image after it has been used.
         }
-        private string[] GeneratePasswords()
+        private string GeneratePassword()
         {
             Random random = new Random();
-            string[] passwords = new string[54];
+            string password = String.Empty;
             string alphabet = File.ReadAllText(@"alphabet.txt"); // Reads file containing all ASCII characters.
-            for (int passwordIndex = 0; passwordIndex < 54; passwordIndex++) // Generates a password for every component of the cube.
+            for (int i = 0; i < 12; i++) // Each password is of length 12
             {
-                string password = string.Empty;
-                for (int i = 0; i < 12; i++) // Each password is of length 12
-                {
-                    password += alphabet[random.Next(0, alphabet.Length)];
-                }
-                passwords[passwordIndex] = password;
+                password = String.Concat(password, alphabet[random.Next(0, alphabet.Length)]);
             }
-            return passwords;
+            return password;
         }
         private void ProcessImage()
         {
@@ -133,41 +122,39 @@ namespace ImageRecognition
         private void HandleSelection(object sender)
         {
             clickCount++;
-            if (clickCount < 7)
+            switch (clickCount)
             {
-                ProcessImage();
-                counter_lbl.Text = clickCount + "/6";
+                case 6:
+                    instruction_lbl.Text = "Select a master image";
+                    counter_lbl.Text = clickCount - 6 + "/1";
+                    break;
+                case 7:
+                    PerformSteganography(sender);
+                    break;
+                default:
+                    ProcessImage();
+                    counter_lbl.Text = clickCount + "/6";
+                    break;
             }
-            if (clickCount >= 6)
+        }
+        private void PerformSteganography(object sender)
+        {
+            PictureBox pictureBox = sender as PictureBox;
+            WebClient client = new WebClient();
+            FileStream fs = new FileStream(@"master.jpg", FileMode.Open);
+
+            ChangePictureBoxes(false);
+
+            instruction_lbl.Text = "Processing selections...";
+            client.DownloadFile(pictureBox.ImageLocation, "master.jpg");
+            StoreHash(fs);
+            fs.Close(); // Closes stream so the file can be deleted.
+            File.Delete(fs.Name);
+
+            for (int i = 0; i < 54; i++)
             {
-                instruction_lbl.Text = "Select a master image";
-                counter_lbl.Text = clickCount - 6 + "/1";
-            }
-            else
-            {
-                PictureBox pictureBox = sender as PictureBox;
-                WebClient client = new WebClient();
-                FileStream fs = new FileStream(@"master.jpg", FileMode.Open);
-
-                ChangePictureBoxes(false);
-
-                instruction_lbl.Text = "Processing selections...";
-                client.DownloadFile(pictureBox.ImageLocation, "master.jpg");
-                StoreHash(fs);
-                fs.Close(); // Closes stream so the file can be deleted.
-                File.Delete(fs.Name);
-                string[] toEmbed = GeneratePasswords();
-
-
-                for (int i = 0; i < 54; i++)
-                {
-                    Bitmap image = new Steganography().EmbedText(toEmbed[i], (Bitmap) Image.FromFile(Directory.GetFiles(@"Images\")[i]));
-
-                    //File.Delete(Directory.GetFiles(@"Images\")[i]);
-                    image.Save(@"Res\" + i + ".jpg");
-                }
-
-                //Process render = Process.Start()
+                Bitmap image = new Steganography().EmbedText(GeneratePassword(), (Bitmap)Image.FromFile(Directory.GetFiles(@"Images\")[i]));
+                image.Save(@"Render\Res\" + i + ".jpg");
             }
         }
         private void ChangePictureBoxes(bool enabled)
@@ -183,18 +170,9 @@ namespace ImageRecognition
         }
         private void ChangeDisplayMode(int mode)
         {
-            foreach (Control control in this.Controls)
+            foreach (Control control in this.Controls.OfType<Control>().Where(t => t.Tag != null))
             {
-                if (Convert.ToInt32(control.Tag) == mode)
-                {
-                    control.Visible = true;
-                    control.Enabled = true;
-                }
-                else if (control.Tag != string.Empty)
-                {
-                    control.Visible = false;
-                    control.Enabled = false;
-                }    
+                control.Enabled = control.Visible = Convert.ToInt32(control.Tag) == mode;
             }
         }
         private void StoreHash(FileStream fs)
@@ -238,7 +216,7 @@ namespace ImageRecognition
             {
                 File.Delete(file);
             }
-            foreach (string file in Directory.GetFiles(@"Res/"))
+            foreach (string file in Directory.GetFiles(@"Render/Res/"))
             {
                 File.Delete(file);
             }
