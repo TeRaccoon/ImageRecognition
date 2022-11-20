@@ -130,6 +130,123 @@ namespace ImageRecognition
                 }
             }
         }
+        private void HandleSelection(object sender)
+        {
+            clickCount++;
+            if (clickCount < 7)
+            {
+                ProcessImage();
+                counter_lbl.Text = clickCount + "/6";
+            }
+            if (clickCount >= 6)
+            {
+                instruction_lbl.Text = "Select a master image";
+                counter_lbl.Text = clickCount - 6 + "/1";
+            }
+            else
+            {
+                PictureBox pictureBox = sender as PictureBox;
+                WebClient client = new WebClient();
+                FileStream fs = new FileStream(@"master.jpg", FileMode.Open);
+
+                ChangePictureBoxes(false);
+
+                instruction_lbl.Text = "Processing selections...";
+                client.DownloadFile(pictureBox.ImageLocation, "master.jpg");
+                StoreHash(fs);
+                fs.Close(); // Closes stream so the file can be deleted.
+                File.Delete(fs.Name);
+                string[] toEmbed = GeneratePasswords();
+
+
+                for (int i = 0; i < 54; i++)
+                {
+                    Bitmap image = new Steganography().EmbedText(toEmbed[i], (Bitmap) Image.FromFile(Directory.GetFiles(@"Images\")[i]));
+
+                    //File.Delete(Directory.GetFiles(@"Images\")[i]);
+                    image.Save(@"Res\" + i + ".jpg");
+                }
+
+                //Process render = Process.Start()
+            }
+        }
+        private void ChangePictureBoxes(bool enabled)
+        {
+            foreach (PictureBox control in this.Controls.OfType<PictureBox>())
+            {
+                if (control.Name.Contains("pictureBox"))
+                {
+                    control.Visible = enabled;
+                    control.Enabled = enabled;
+                }
+            }
+        }
+        private void ChangeDisplayMode(int mode)
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (Convert.ToInt32(control.Tag) == mode)
+                {
+                    control.Visible = true;
+                    control.Enabled = true;
+                }
+                else if (control.Tag != string.Empty)
+                {
+                    control.Visible = false;
+                    control.Enabled = false;
+                }    
+            }
+        }
+        private void StoreHash(FileStream fs)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(fs);
+            string hashString = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
+            File.WriteAllText(@"SecurityData/key.md5", hashString);
+        }
+
+                /*************************
+                        * EVENTS *
+                *************************/
+
+        private void Info_img_Click(object sender, EventArgs e)
+        {
+            Process.Start(@"readme.txt");
+        }
+        private void PictureBox_Click(object sender, EventArgs e)
+        {
+            PictureBox pictureBox = sender as PictureBox;
+            selectedImagePaths.Add(pictureBox.ImageLocation);
+            PopulateImages();
+            HandleSelection(sender);
+        }
+        private void Refresh_btn_Click(object sender, EventArgs e)
+        {
+            PopulateImages();
+        }
+        private void Reset_btn_Click(object sender, EventArgs e)
+        {
+            foreach (string file in Directory.GetFiles(@"Render/SelectedImages/"))
+            {
+                File.Delete(file);
+            }
+            foreach (string file in Directory.GetFiles(@"Images/"))
+            {
+                File.Delete(file);
+            }
+            foreach (string file in Directory.GetFiles(@"SecurityData/"))
+            {
+                File.Delete(file);
+            }
+            foreach (string file in Directory.GetFiles(@"Res/"))
+            {
+                File.Delete(file);
+            }
+            start_btn.Text = "Register";
+            reset_btn.Visible = false;
+            reset_btn.Enabled = false;
+            this.Refresh();
+        }
         private void Start_btn_Click(object sender, EventArgs e)
         {
             if (CheckRegistered())
@@ -157,27 +274,11 @@ namespace ImageRecognition
             {
                 this.Size = new Size(760, 660);
                 instruction_lbl.Location = new Point(185, 539);
-                refresh_btn.Visible = true;
-                refresh_btn.Enabled = true;
-                upload_lbl.Visible = true;
-                upload_lbl.Enabled = true;
-                counter_lbl.Visible = true;
-                submit_btn.Visible = false;
-                username_txt.Visible = false;
+                ChangeDisplayMode(2);
                 instruction_lbl.Text = "Please select 6 of the images from above or upload your own";
-                foreach (PictureBox pictureBox in this.Controls.OfType<PictureBox>())
-                {
-                    if (pictureBox.Name.Contains("pictureBox"))
-                    {
-                        pictureBox.Enabled = true;
-                    }
-                }
+                ChangePictureBoxes(true);
                 PopulateImages();
             }
-        }
-        private void Info_img_Click(object sender, EventArgs e)
-        {
-            Process.Start(@"readme.txt");
         }
         private void Upload_lbl_Click(object sender, EventArgs e)
         {
@@ -186,85 +287,6 @@ namespace ImageRecognition
                 selectedImagePaths.Add(openFileDialog.FileName);
             }
             HandleSelection(null);
-        }
-        private void PictureBox_Click(object sender, EventArgs e)
-        {
-            PictureBox pictureBox = sender as PictureBox;
-            selectedImagePaths.Add(pictureBox.ImageLocation);
-            PopulateImages();
-            HandleSelection(sender);
-        }
-        private void HandleSelection(object sender)
-        {
-            clickCount++;
-            counter_lbl.Text = clickCount + "/6";
-            ProcessImage();
-            if (clickCount >= 6)
-            {
-                instruction_lbl.Text = "Select a master image";
-                counter_lbl.Text = clickCount - 6 + "/1";
-            }
-            if (clickCount == 7)
-            {
-                instruction_lbl.Text = "Processing selections...";
-                PictureBox pictureBox = sender as PictureBox;
-                WebClient client = new WebClient();
-                client.DownloadFile(pictureBox.ImageLocation, "master.jpg");
-                FileStream fs = new FileStream(@"master.jpg", FileMode.Open);
-                StoreHash(fs);
-                string[] toEmbed = GeneratePasswords();
-
-                foreach (PictureBox control in this.Controls.OfType<PictureBox>())
-                {
-                    if (control.Name.Contains("pictureBox"))
-                    {
-                        control.Visible = false;
-                        control.Enabled = false;
-                    }
-                }
-
-                for (int i = 0; i < 54; i++)
-                {
-                    Bitmap image = new Steganography().EmbedText(toEmbed[i], (Bitmap) Image.FromFile(Directory.GetFiles(@"Images\")[i]));
-                    File.Delete(Directory.GetFiles(@"Images\")[i]);
-                    image.Save(Directory.GetFiles(@"Images\")[i]);
-                }
-
-                //Process render = Process.Start()
-            }
-        }
-        private void StoreHash(FileStream fs)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] hash = md5.ComputeHash(fs);
-            fs.Close(); // Closes stream so the file can be deleted.
-            File.Delete(fs.Name);
-            string hashString = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
-            File.WriteAllText(@"SecurityData/key.md5", hashString);
-        }
-
-        private void reset_btn_Click(object sender, EventArgs e)
-        {
-            foreach (string file in Directory.GetFiles(@"Render/SelectedImages/"))
-            {
-                File.Delete(file);
-            }
-            foreach (string file in Directory.GetFiles(@"Images/"))
-            {
-                File.Delete(file);
-            }
-            foreach (string file in Directory.GetFiles(@"SecurityData/"))
-            {
-                File.Delete(file);
-            }
-            reset_btn.Visible = false;
-            reset_btn.Enabled = false;
-            this.Refresh();
-        }
-
-        private void refresh_btn_Click(object sender, EventArgs e)
-        {
-            PopulateImages();
         }
     }
 }

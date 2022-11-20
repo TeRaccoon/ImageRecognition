@@ -89,6 +89,7 @@
             this.username_txt.Name = "username_txt";
             this.username_txt.Size = new System.Drawing.Size(236, 27);
             this.username_txt.TabIndex = 11;
+            this.username_txt.Tag = "1";
             this.username_txt.Visible = false;
             // 
             // submit_btn
@@ -100,6 +101,7 @@
             this.submit_btn.Name = "submit_btn";
             this.submit_btn.Size = new System.Drawing.Size(75, 27);
             this.submit_btn.TabIndex = 12;
+            this.submit_btn.Tag = "1";
             this.submit_btn.Text = "Submit";
             this.submit_btn.UseVisualStyleBackColor = true;
             this.submit_btn.Visible = false;
@@ -115,6 +117,7 @@
             this.start_btn.Name = "start_btn";
             this.start_btn.Size = new System.Drawing.Size(110, 29);
             this.start_btn.TabIndex = 13;
+            this.start_btn.Tag = "1";
             this.start_btn.UseVisualStyleBackColor = false;
             this.start_btn.Click += new System.EventHandler(this.Start_btn_Click);
             // 
@@ -133,6 +136,7 @@
             this.upload_lbl.Name = "upload_lbl";
             this.upload_lbl.Size = new System.Drawing.Size(67, 16);
             this.upload_lbl.TabIndex = 14;
+            this.upload_lbl.Tag = "2";
             this.upload_lbl.Text = "Upload";
             this.upload_lbl.Visible = false;
             this.upload_lbl.Click += new System.EventHandler(this.Upload_lbl_Click);
@@ -147,6 +151,7 @@
             this.counter_lbl.Name = "counter_lbl";
             this.counter_lbl.Size = new System.Drawing.Size(37, 16);
             this.counter_lbl.TabIndex = 15;
+            this.counter_lbl.Tag = "2";
             this.counter_lbl.Text = "0/6";
             this.counter_lbl.Visible = false;
             // 
@@ -160,9 +165,10 @@
             this.reset_btn.Name = "reset_btn";
             this.reset_btn.Size = new System.Drawing.Size(82, 29);
             this.reset_btn.TabIndex = 16;
+            this.reset_btn.Tag = "1";
             this.reset_btn.Text = "Reset";
             this.reset_btn.UseVisualStyleBackColor = false;
-            this.reset_btn.Click += new System.EventHandler(this.reset_btn_Click);
+            this.reset_btn.Click += new System.EventHandler(this.Reset_btn_Click);
             // 
             // refresh_btn
             // 
@@ -177,8 +183,9 @@
             this.refresh_btn.Size = new System.Drawing.Size(44, 48);
             this.refresh_btn.TabIndex = 17;
             this.refresh_btn.TabStop = false;
+            this.refresh_btn.Tag = "2";
             this.refresh_btn.Visible = false;
-            this.refresh_btn.Click += new System.EventHandler(this.refresh_btn_Click);
+            this.refresh_btn.Click += new System.EventHandler(this.Refresh_btn_Click);
             // 
             // pictureBox6
             // 
@@ -193,6 +200,7 @@
             this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox6.TabIndex = 9;
             this.pictureBox6.TabStop = false;
+            this.pictureBox6.Tag = "2";
             // 
             // pictureBox5
             // 
@@ -207,6 +215,7 @@
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox5.TabIndex = 8;
             this.pictureBox5.TabStop = false;
+            this.pictureBox5.Tag = "2";
             // 
             // pictureBox4
             // 
@@ -221,6 +230,7 @@
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox4.TabIndex = 7;
             this.pictureBox4.TabStop = false;
+            this.pictureBox4.Tag = "2";
             // 
             // pictureBox3
             // 
@@ -235,6 +245,7 @@
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox3.TabIndex = 6;
             this.pictureBox3.TabStop = false;
+            this.pictureBox3.Tag = "2";
             // 
             // pictureBox2
             // 
@@ -249,6 +260,7 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.Tag = "2";
             // 
             // pictureBox1
             // 
@@ -264,6 +276,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Tag = "2";
             // 
             // info_img
             // 
@@ -287,7 +300,7 @@
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::ImageRecognition.Properties.Resources.black_background;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(449, 207);
+            this.ClientSize = new System.Drawing.Size(450, 207);
             this.Controls.Add(this.refresh_btn);
             this.Controls.Add(this.reset_btn);
             this.Controls.Add(this.counter_lbl);
@@ -307,6 +320,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Start";
+            this.Tag = "";
             this.Text = "GRABLOCK";
             ((System.ComponentModel.ISupportInitialize)(this.refresh_btn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();

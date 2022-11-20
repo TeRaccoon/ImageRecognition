@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace ImageRecognition
 {
@@ -53,7 +54,7 @@ namespace ImageRecognition
                                 }
                                 return image;
                             }
-                            if (charValue >= textToHide.Length) // If it has finished hiding all of the text
+                            if (textToHideIndex >= textToHide.Length) // If it has finished hiding all of the text
                             {
                                 state = State.Filling_With_Zeros;
                             }

@@ -77,9 +77,6 @@ namespace ImageRecognition
             // Finds the colour value difference between the original and to compare images and adds it to the scores list.
             for (int imageIndex = 0; imageIndex < colourData.Length; imageIndex++)
             {
-                if (imageIndex == 1184 || imageIndex == 1203 || imageIndex == 1185)
-                { 
-                }
                 string currentData = Regex.Replace(colourData[imageIndex], "[^. .0-9]", ""); // Removes redundant data.
                 string[] currentColourValue = currentData.Split(' ');
                 scores.Add(Math.Abs(colourValues[0] - Convert.ToInt32(currentColourValue[0])) + Math.Abs(colourValues[1] - Convert.ToInt32(currentColourValue[1])) + Math.Abs(colourValues[2] - Convert.ToInt32(currentColourValue[2])) + Math.Abs(colourValues[3] - Convert.ToInt32(currentColourValue[3])));
