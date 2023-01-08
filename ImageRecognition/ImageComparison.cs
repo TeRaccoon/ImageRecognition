@@ -86,7 +86,7 @@ namespace ImageRecognition
             {
                 if (scores.Min() == 0) // Prevents the same image from being used twice.
                 {
-                    scores[scores.IndexOf(scores.Min())] = 2000;
+                    scores[scores.IndexOf(scores.Min())] = 2000; // Can't be removed as it will damage the list order so is inflated
                     i--;
                 }
                 else
